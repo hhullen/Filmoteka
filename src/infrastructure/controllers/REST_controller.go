@@ -9,6 +9,6 @@ type ControllerREST struct {
 	service as.Filmoteka
 }
 
-func NewControllerREST(prefix string) ControllerREST {
-	return ControllerREST{service: as.NewFilmoteka(db.NewPostgredDB())}
+func NewControllerREST(prefix string) *ControllerREST {
+	return &ControllerREST{service: as.NewFilmoteka(db.NewPostgredDB())}
 }

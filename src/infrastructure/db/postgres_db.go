@@ -1,4 +1,4 @@
-package postgres_db
+package database
 
 import (
 	dm "domain_model"

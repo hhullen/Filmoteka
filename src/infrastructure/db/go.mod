@@ -1,3 +1,3 @@
-module postgres_db
+module database
 
 go 1.22.0
