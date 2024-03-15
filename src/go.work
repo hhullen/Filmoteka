@@ -1,0 +1,9 @@
+go 1.22.0
+
+use(
+    ./core/domain_model
+    ./core/repository
+    ./core/application_service
+    ./infrastructure/controllers
+    ./infrastructure/db
+)
