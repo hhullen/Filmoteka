@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	dm "domain_model"

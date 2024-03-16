@@ -17,7 +17,7 @@ type IRepository interface {
 	GetActorStarredFilms(name string) ([]dm.Films, error)
 	AddFilm(film dm.Films) error
 	AddFilmActors(film string, actors []dm.Actors) error
-	DeleteFilmActors(film string, name string) error
+	DeleteFilmActor(film string, name string) error
 	UpdateFilm(name string, film dm.Films) error
 	DeleteFilm(name string) error
 	GetAllFilms(order dm.SortOrder, column dm.SortColumn) ([]dm.Films, error)

@@ -113,7 +113,7 @@ func (me *MockDB) AddFilmActors(film string, actors []dm.Actors) error {
 	return nil
 }
 
-func (me *MockDB) DeleteFilmActors(film string, name string) error {
+func (me *MockDB) DeleteFilmActor(film string, name string) error {
 	idx := slices.IndexFunc(me.FilmsTable, func(a dm.Films) bool {
 		return a.Name == film
 	})
@@ -122,7 +122,7 @@ func (me *MockDB) DeleteFilmActors(film string, name string) error {
 	}
 
 	idx = slices.IndexFunc(me.AFRelTable, func(a dm.ActorsFilmsRelations) bool {
-		return a.FilmID == int64(idx)
+		return a.FilmID == me.FilmsTable[idx].ID && me.FilmsTable[idx].Name == name
 	})
 	if idx != -1 {
 		me.AFRelTable = append(me.AFRelTable[:idx], me.AFRelTable[idx+1:]...)
@@ -149,13 +149,16 @@ func (me *MockDB) UpdateFilm(name string, film dm.Films) error {
 }
 
 func (me *MockDB) DeleteFilm(name string) error {
-	idx := slices.IndexFunc(me.FilmsTable, func(a dm.Films) bool {
-		return a.Name == name
-	})
-	if idx == -1 {
-		return errors.New("film \"" + name + "\" does not exists")
+	for i, v := range me.FilmsTable {
+		if v.Name == name && len(me.FilmsTable) > i {
+			for j, rel := range me.AFRelTable {
+				if rel.FilmID == v.ID && len(me.AFRelTable) > j {
+					me.AFRelTable = append(me.AFRelTable[:j], me.AFRelTable[j+1:]...)
+				}
+			}
+			me.FilmsTable = append(me.FilmsTable[:i], me.FilmsTable[i+1:]...)
+		}
 	}
-	me.FilmsTable = append(me.FilmsTable[:idx], me.FilmsTable[idx+1:]...)
 	return nil
 }
 
@@ -183,6 +186,9 @@ func (me *MockDB) GetFilmsByActorNameSegment(segment string) ([]dm.Films, error)
 			idx := slices.IndexFunc(me.AFRelTable, func(a dm.ActorsFilmsRelations) bool {
 				return a.ActorID == actor.ID
 			})
+			if idx == -1 {
+				continue
+			}
 			film_id_to_find := me.AFRelTable[idx].FilmID
 			idx = slices.IndexFunc(me.FilmsTable, func(a dm.Films) bool {
 				return a.ID == film_id_to_find
@@ -204,7 +210,7 @@ func (me *MockDB) GetFilmCast(name string) ([]dm.Actors, error) {
 	}
 	actors := []dm.Actors{}
 	for _, v := range me.AFRelTable {
-		if v.FilmID == int64(film_idx) {
+		if v.FilmID == me.FilmsTable[film_idx].ID {
 			actor_idx := slices.IndexFunc(me.ActorsTable, func(a dm.Actors) bool {
 				return a.ID == v.FilmID
 			})
