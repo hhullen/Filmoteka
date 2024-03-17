@@ -10,6 +10,7 @@ import (
 )
 
 var service as.Filmoteka = as.NewFilmoteka(db.NewMoMockDB())
+var mock_birthday int64 = time.Now().Unix()
 
 type ActorTestDTO struct {
 	ID       int64
@@ -65,7 +66,7 @@ func TestAddActor(t *testing.T) {
 		ID:       1,
 		Name:     "Vasilisa",
 		Gender:   "Female",
-		Birthday: time.Now().Unix(),
+		Birthday: mock_birthday,
 	})
 	if err != nil {
 		t.Fatal(err.Error())
@@ -73,13 +74,6 @@ func TestAddActor(t *testing.T) {
 }
 
 func TestGetActor(t *testing.T) {
-	mock_birthday := time.Now().Unix()
-	service.AddActor(&ActorTestDTO{
-		ID:       1,
-		Name:     "Vasilisa",
-		Gender:   "Female",
-		Birthday: mock_birthday,
-	})
 	actor, err := service.GetActor("Vasilisa")
 	if err != nil {
 		t.Fatal(err.Error())
@@ -94,12 +88,11 @@ func TestGetActor(t *testing.T) {
 }
 
 func TestUpdateActor(t *testing.T) {
-	birthday_new := time.Now().Unix()
 	updated_actor := &ActorTestDTO{
 		ID:       1,
 		Name:     "Vasilisk",
 		Gender:   "Male",
-		Birthday: birthday_new,
+		Birthday: mock_birthday,
 	}
 	err := service.UpdateActor("Vasilisa", updated_actor)
 	if err != nil {
@@ -114,7 +107,7 @@ func TestUpdateActor(t *testing.T) {
 	if actor.ID != 1 ||
 		actor.Name != "Vasilisk" ||
 		actor.Gender != "Male" ||
-		actor.Birthday != birthday_new {
+		actor.Birthday != mock_birthday {
 		t.Fatal("failed updating actor")
 	}
 }
@@ -149,7 +142,6 @@ func TestAddFilm(t *testing.T) {
 }
 
 func TestAddFilmActors(t *testing.T) {
-	mock_birthday := time.Now().Unix()
 	actor_1 := ActorTestDTO{
 		ID:       1,
 		Name:     "Kiki",

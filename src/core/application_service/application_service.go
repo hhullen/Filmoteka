@@ -3,56 +3,98 @@ package application_service
 import (
 	dm "domain_model"
 	"errors"
+	"log"
+	"os"
 	rep "repository"
 )
 
 type Filmoteka struct {
-	repo rep.IRepository
+	logger *log.Logger
+	repo   rep.IRepository
 }
 
 func NewFilmoteka(repository rep.IRepository) Filmoteka {
-	return Filmoteka{repo: repository}
+	logger := log.New(os.Stdout, "FILMOTEKA: ", log.LstdFlags)
+	logger.Println("Service created")
+	return Filmoteka{
+		logger: logger,
+		repo:   repository,
+	}
 }
 
 func (me *Filmoteka) AddActor(actor rep.IDTO[dm.Actors]) error {
 	domain_actor, err := actor.MapToDomain()
 	if err != nil {
+		me.logger.Println(err.Error())
 		return errors.New(err.Error())
 	}
-	me.repo.AddActor(domain_actor)
+	err = me.repo.AddActor(domain_actor)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Actor added", domain_actor)
 	return nil
 }
 
 func (me *Filmoteka) UpdateActor(name string, actor rep.IDTO[dm.Actors]) error {
 	domain_actor, err := actor.MapToDomain()
 	if err != nil {
+		me.logger.Println(err.Error())
 		return errors.New(err.Error())
 	}
-	return me.repo.UpdateActor(name, domain_actor)
+	err = me.repo.UpdateActor(name, domain_actor)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Actor updated:", domain_actor)
+	return nil
 }
 
 func (me *Filmoteka) DeleteActor(name string) error {
-	return me.repo.DeleteActor(name)
+	err := me.repo.DeleteActor(name)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Actor deleted: \"" + name + "\"")
+	return nil
 }
 
 func (me *Filmoteka) GetActor(name string) (dm.Actors, error) {
 	actor, err := me.repo.GetActor(name)
 	if err != nil {
+		me.logger.Println(err.Error())
 		return dm.Actors{}, errors.New(err.Error())
 	}
+	me.logger.Println("Actor got:", actor)
 	return actor, nil
 }
 
 func (me *Filmoteka) GetActorStarredFilms(name string) ([]dm.Films, error) {
-	return me.repo.GetActorStarredFilms(name)
+	films, err := me.repo.GetActorStarredFilms(name)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return nil, errors.New(err.Error())
+	}
+	me.logger.Println("Films got:", films)
+	return films, nil
 }
 
 func (me *Filmoteka) AddFilm(film rep.IDTO[dm.Films]) error {
 	domain_film, err := film.MapToDomain()
 	if err != nil {
+		me.logger.Println(err.Error())
 		return errors.New(err.Error())
 	}
-	return me.repo.AddFilm(domain_film)
+	err = me.repo.AddFilm(domain_film)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Film added:", domain_film)
+	return nil
 }
 
 func (me *Filmoteka) AddFilmActors(film string, actors []rep.IDTO[dm.Actors]) error {
@@ -64,11 +106,23 @@ func (me *Filmoteka) AddFilmActors(film string, actors []rep.IDTO[dm.Actors]) er
 		}
 		domain_actors = append(domain_actors, domain_actor)
 	}
-	return me.repo.AddFilmActors(film, domain_actors)
+	err := me.repo.AddFilmActors(film, domain_actors)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Film actor added:", domain_actors)
+	return nil
 }
 
 func (me *Filmoteka) DeleteFilmActor(film string, name string) error {
-	return me.repo.DeleteFilmActor(film, name)
+	err := me.repo.DeleteFilmActor(film, name)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Film \"" + film + "\" actor \"" + name + "\" deleted")
+	return nil
 }
 
 func (me *Filmoteka) UpdateFilm(name string, film rep.IDTO[dm.Films]) error {
@@ -76,7 +130,13 @@ func (me *Filmoteka) UpdateFilm(name string, film rep.IDTO[dm.Films]) error {
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	return me.repo.UpdateFilm(name, domain_film)
+	err = me.repo.UpdateFilm(name, domain_film)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Film updated:", domain_film)
+	return nil
 }
 
 func (me *Filmoteka) GetAllFilms(order dm.SortOrder, column dm.SortColumn) ([]dm.Films, error) {
@@ -84,21 +144,46 @@ func (me *Filmoteka) GetAllFilms(order dm.SortOrder, column dm.SortColumn) ([]dm
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
+	me.logger.Println("Films got:", films)
 	return films, nil
 }
 
 func (me *Filmoteka) GetFilmsByNameSegment(segment string) ([]dm.Films, error) {
-	return me.repo.GetFilmsByNameSegment(segment)
+	films, err := me.repo.GetFilmsByNameSegment(segment)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return nil, errors.New(err.Error())
+	}
+	me.logger.Println("Films got:", films)
+	return films, nil
 }
 
 func (me *Filmoteka) GetFilmsByActorNameSegment(segment string) ([]dm.Films, error) {
-	return me.repo.GetFilmsByActorNameSegment(segment)
+	films, err := me.repo.GetFilmsByActorNameSegment(segment)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return nil, errors.New(err.Error())
+	}
+	me.logger.Println("Films got:", films)
+	return films, nil
 }
 
 func (me *Filmoteka) GetFilmCast(name string) ([]dm.Actors, error) {
-	return me.repo.GetFilmCast(name)
+	actors, err := me.repo.GetFilmCast(name)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return nil, errors.New(err.Error())
+	}
+	me.logger.Println("Film cast got:", actors)
+	return actors, nil
 }
 
 func (me *Filmoteka) DeleteFilm(name string) error {
-	return me.repo.DeleteFilm(name)
+	err := me.repo.DeleteFilm(name)
+	if err != nil {
+		me.logger.Println(err.Error())
+		return errors.New(err.Error())
+	}
+	me.logger.Println("Film deleted:", name)
+	return nil
 }
