@@ -13,9 +13,11 @@ The wep application architecture include 2 main layers: Core and Infrastructure.
 
 ## Run
 There are implemented some commands in Makefile
-* `Make test` - run tests
-* `Make run` - will try to up docker-compose with web application
+* `make test` - run tests
+* `make run` - will try to up docker-compose with web application
 
-Application will listen `127.0.0.1:8888`
+Application will listen `127.0.0.1:8888`  
+
+There is a file with some variables for docker-compose images in env file. It is possible to copy this file into `.env` and change it as needed. In case of absence of this file at the moment `make run` command run, it will be copied from `env` file automaticaly
 
 > Some functional can be not implemented yet (
