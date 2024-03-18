@@ -5,13 +5,13 @@ import (
 	rep "repository"
 )
 
-type PostgredDB struct {
+type PostgresDB struct {
 }
 
-func NewPostgredDB() *PostgredDB {
-	return &PostgredDB{}
+func NewPostgresDB() *PostgresDB {
+	return &PostgresDB{}
 }
 
-func (me *PostgredDB) AddActor(actor rep.IDTO[dm.Actors]) error {
+func (me *PostgresDB) AddActor(actor rep.IDTO[dm.Actors]) error {
 	return nil
 }

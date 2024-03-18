@@ -14,9 +14,10 @@ type IRepository interface {
 	UpdateActor(name string, actor dm.Actors) error
 	DeleteActor(name string) error
 	GetActor(name string) (dm.Actors, error)
+	AddFilmActors(film string, actors []dm.Actors) error
+
 	GetActorStarredFilms(name string) ([]dm.Films, error)
 	AddFilm(film dm.Films) error
-	AddFilmActors(film string, actors []dm.Actors) error
 	DeleteFilmActor(film string, name string) error
 	UpdateFilm(name string, film dm.Films) error
 	DeleteFilm(name string) error
